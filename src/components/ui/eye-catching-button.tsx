@@ -1,6 +1,8 @@
 import { cn } from '@/lib/utils';
-import { Button, type ButtonProps } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import React from 'react';
+
+type ButtonProps = React.ComponentProps<typeof Button>;
 
 //====================================== Border beam
 export const EyeCatchingButton_v1 = ({ ...props }: ButtonProps) => {

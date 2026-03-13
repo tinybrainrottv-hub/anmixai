@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 
 interface AIVoiceProps {
   onTranscription?: (text: string) => void;
+  apiKey?: string;
 }
 
 const DEEPGRAM_API_KEY = process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY || "";

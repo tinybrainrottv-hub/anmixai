@@ -159,16 +159,16 @@ export async function POST(req: NextRequest) {
       const errMsg =
         typeof data?.error === "string"
           ? data.error
-          : data?.message ?? data?.error?.message ?? `Video API error: ${res.status}`;
+          : (data as any)?.message ?? (data as any)?.error?.message ?? `Video API error: ${res.status}`;
       return NextResponse.json({ error: errMsg }, { status: res.status >= 500 ? 502 : res.status });
     }
 
     const directUrl =
-      data?.url ??
-      data?.video_url ??
-      data?.videoUrl ??
-      data?.video?.url ??
-      data?.choices?.[0]?.message?.content;
+      (data as any)?.url ??
+      (data as any)?.video_url ??
+      (data as any)?.videoUrl ??
+      (data as any)?.video?.url ??
+      (data as any)?.choices?.[0]?.message?.content;
     if (directUrl && typeof directUrl === "string" && directUrl.startsWith("http")) {
       return NextResponse.json({ url: directUrl });
     }
@@ -191,7 +191,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const fromChoice = data?.choices?.[0];
+    const fromChoice = (data as any)?.choices?.[0];
     if (fromChoice?.message?.content && typeof fromChoice.message.content === "string") {
       const content = fromChoice.message.content.trim();
       const maybeUrl = content.startsWith("http") ? content : null;
@@ -209,10 +209,10 @@ export async function POST(req: NextRequest) {
     }
 
     const errStr =
-      typeof data?.error === "string"
-        ? data.error
-        : data?.error?.message
-          ? String(data.error.message)
+      typeof (data as any)?.error === "string"
+        ? (data as any).error
+        : (data as any)?.error?.message
+          ? String((data as any).error.message)
           : "Video service did not return a video URL. Try a different prompt or try again.";
     return NextResponse.json({ error: errStr }, { status: 502 });
   } catch (e) {

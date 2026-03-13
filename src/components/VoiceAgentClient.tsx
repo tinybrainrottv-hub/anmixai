@@ -157,8 +157,10 @@ Navigation help: “Can you tell me the address or place you’re trying to reac
     };
   }, [onConversationText]);
 
+  const DeepgramAgentTag: any = "deepgram-agent";
+
   return (
-    <deepgram-agent
+    <DeepgramAgentTag
       ref={agentRef as any}
       url="wss://agent.deepgram.com/v1/agent/converse"
       auth-scheme="token"

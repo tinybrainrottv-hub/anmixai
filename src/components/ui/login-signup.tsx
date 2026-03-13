@@ -410,7 +410,7 @@ export default function LoginCardSection() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 mt-4">
-                  <SignInButton mode="redirect" redirectUrl="/">
+                  <SignInButton mode="redirect">
                     <Button
                       type="button"
                       variant="outline"
@@ -421,7 +421,7 @@ export default function LoginCardSection() {
                       GitHub
                     </Button>
                   </SignInButton>
-                  <SignInButton mode="redirect" redirectUrl="/">
+                  <SignInButton mode="redirect">
                     <Button
                       type="button"
                       variant="outline"

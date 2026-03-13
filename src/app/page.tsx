@@ -250,8 +250,13 @@ export default function AnmixDashboard() {
             setIsTyping(false);
             return;
           }
-        } else if (imgPreview.url && /^https?:\/\//.test(imgPreview.url)) {
-          maybeImageUrl = imgPreview.url;
+        } else {
+          const url = (imgPreview as any)?.url as string | undefined;
+          if (!url) {
+            // no image URL available
+          } else if (/^https?:\/\//.test(url || "")) {
+            maybeImageUrl = url!;
+          }
         }
       }
 
@@ -307,11 +312,11 @@ export default function AnmixDashboard() {
               : m,
           ),
         );
-      } catch (e) {
-        const errMessage =
-          e instanceof Error
-            ? e.message
-            : "Image enhancement failed. Please try again.";
+      } catch (e: unknown) {
+        let errMessage = "Image enhancement failed. Please try again.";
+        if (e instanceof Error) {
+          errMessage = (e as Error).message;
+        }
         setMessages((prev) =>
           prev.map((m) =>
             m.id === assistantMsgId
@@ -984,6 +989,9 @@ export default function AnmixDashboard() {
       const finalBlob: Blob | null = await new Promise((resolve, reject) =>
         canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("toBlob failed"))), "image/png", 0.95),
       );
+      if (!finalBlob) {
+        throw new Error("Failed to create image blob");
+      }
       const finalUrl = URL.createObjectURL(finalBlob);
 
       const a = document.createElement("a");
@@ -2112,7 +2120,7 @@ export default function AnmixDashboard() {
                     </motion.div>
                   );})}
 
-                  {(chatMode === "image-edit" || chatMode === "image-enhance" || chatMode === "video-gen") && pendingImagePreviews.length > 0 && (
+                  {(chatMode === "image-edit" || chatMode === "video-gen") && pendingImagePreviews.length > 0 && (
                     <motion.div
                       layout
                       initial={{ opacity: 0, y: 10 }}
@@ -2197,8 +2205,6 @@ export default function AnmixDashboard() {
                       ? "Describe an image to generate"
                       : chatMode === "video-gen"
                         ? "Describe a video to generate"
-                        : chatMode === "image-enhance"
-                          ? "Describe how to enhance your image"
                         : voiceMode
                           ? "Talk to Anmix Ai"
                           : "Ask anything to anmix ai"
@@ -2207,7 +2213,7 @@ export default function AnmixDashboard() {
                  onImageMode={startImageChat}
                  mode={chatMode}
                  onPendingFilesChange={
-                  chatMode === "image-edit" || chatMode === "image-enhance" || chatMode === "video-gen"
+                  chatMode === "image-edit" || chatMode === "video-gen"
                     ? (files) =>
                         setPendingImagePreviews(
                           files.map((f: any) => ({ url: f.url, name: f.name })),
