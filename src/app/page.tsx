@@ -154,7 +154,6 @@ export default function AnmixDashboard() {
   const IMAGE_MODELS_FOR_CHAT = [
     "ANMIX-PRO",
     "ANMIX-GEN",
-    "ANMIX-BETA",
     "ANMIX-HGEN",
     "ANMIX-PRO-V2",
   ];
@@ -372,13 +371,12 @@ export default function AnmixDashboard() {
       setInput("");
       setIsTyping(true);
 
-      // Pollinations (gen.pollinations.ai) model IDs
+      // Image model IDs (Nexusify-compatible)
       const modelMap: Record<string, string> = {
         "ANMIX-PRO": "gptimage",
         "ANMIX-GEN": "imagen-4",
-        "ANMIX-BETA": "grok-imagine",
-        "ANMIX-HGEN": "klein",
-        "ANMIX-PRO-V2": "klein-large",
+        "ANMIX-HGEN": "klein-large",
+        "ANMIX-PRO-V2": "gptimage",
       };
 
       const apiModel = modelMap[selectedModel] || "klein";
