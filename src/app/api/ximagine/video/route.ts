@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 const XIMAGINE_ENDPOINT =
   process.env.XIMAGINE_VIDEO_ENDPOINT ||
   "https://ximagine-2api-pro-cfwork.kines966176.workers.dev";
-const XIMAGINE_API_KEY = process.env.XIMAGINE_VIDEO_API_KEY || "sk-9661";
 
 /** Worker uses OpenAI-style /v1/chat/completions; content can be prompt or JSON with aspectRatio, mode */
 const DEFAULT_OPTIONS = {
@@ -18,10 +17,11 @@ async function pollForVideoUrl(taskId: string, uniqueId: string): Promise<string
   for (let i = 0; i < maxAttempts; i++) {
     await new Promise((r) => setTimeout(r, intervalMs));
     try {
+      const apiKey = process.env.XIMAGINE_VIDEO_API_KEY;
       const res = await fetch(
         `${XIMAGINE_ENDPOINT}/v1/query/status?taskId=${encodeURIComponent(taskId)}&uniqueId=${encodeURIComponent(uniqueId)}`,
         {
-          headers: { Authorization: `Bearer ${XIMAGINE_API_KEY}` },
+          headers: apiKey ? { Authorization: `Bearer ${apiKey}` } : undefined,
           cache: "no-store",
         }
       );
@@ -77,12 +77,18 @@ export async function POST(req: NextRequest) {
       stream: false,
     };
 
+    const apiKey = process.env.XIMAGINE_VIDEO_API_KEY;
+
     let res = await fetch(`${XIMAGINE_ENDPOINT}/v1/chat/completions`, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${XIMAGINE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
+      headers: apiKey
+        ? {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+          }
+        : {
+            "Content-Type": "application/json",
+          },
       body: JSON.stringify(chatPayload),
       cache: "no-store",
     });
@@ -90,10 +96,14 @@ export async function POST(req: NextRequest) {
     if (!res.ok && res.status === 400) {
       res = await fetch(`${XIMAGINE_ENDPOINT}/v1/chat/completions`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${XIMAGINE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
+        headers: apiKey
+          ? {
+              Authorization: `Bearer ${apiKey}`,
+              "Content-Type": "application/json",
+            }
+          : {
+              "Content-Type": "application/json",
+            },
         body: JSON.stringify({
           model: "grok-imagine-normal",
           messages: [{ role: "user" as const, content: prompt }],
